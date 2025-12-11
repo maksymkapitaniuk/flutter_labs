@@ -5,6 +5,7 @@ class CustomTextField extends StatelessWidget {
   final String? initialValue;
   final bool obscureText;
   final TextEditingController? controller;
+  final String? Function(String?)? validator;
 
   const CustomTextField({
     super.key,
@@ -12,6 +13,7 @@ class CustomTextField extends StatelessWidget {
     this.initialValue,
     this.obscureText = false,
     this.controller,
+    this.validator,
   });
 
   @override
@@ -43,10 +45,12 @@ class CustomTextField extends StatelessWidget {
                 controller: controller,
                 initialValue: initialValue,
                 obscureText: obscureText,
+                validator: validator,
                 decoration: const InputDecoration(
                   isDense: true,
                   contentPadding: EdgeInsets.symmetric(vertical: 8),
                   border: InputBorder.none,
+                  errorStyle: TextStyle(height: 0.5),
                 ),
                 style: const TextStyle(
                   fontSize: 14,

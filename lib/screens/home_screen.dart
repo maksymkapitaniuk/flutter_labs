@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../data/mock_data.dart';
 import '../core/widgets/book_list_item.dart';
+import '../services/auth_repository.dart';
+import 'login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final AuthRepository _authRepository = AuthRepository();
 
   @override
   void initState() {
@@ -25,6 +29,35 @@ class _HomeScreenState extends State<HomeScreen>
     super.dispose();
   }
 
+  Future<void> _signOut() async {
+    await _authRepository.signOut();
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    }
+  }
+
+  Future<String> _getUserName() async {
+    final user = _authRepository.currentUser;
+    if (user != null) {
+      try {
+        final doc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+        if (doc.exists) {
+          final data = doc.data() as Map<String, dynamic>;
+          return "${data['firstName']} ${data['lastName']}";
+        }
+      } catch (e) {
+        return "Error loading name";
+      }
+    }
+    return "Guest User";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,6 +65,12 @@ class _HomeScreenState extends State<HomeScreen>
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.black),
+            onPressed: _signOut,
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
           child: Container(
@@ -66,9 +105,23 @@ class _HomeScreenState extends State<HomeScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  MockData.userName,
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                FutureBuilder<String>(
+                  future: _getUserName(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Text(
+                        "Loading...",
+                        style: TextStyle(fontSize: 20),
+                      );
+                    }
+                    return Text(
+                      snapshot.data ?? "User",
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 30),
                 Expanded(
