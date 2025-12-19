@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../core/widgets/custom_text_field.dart';
 import '../core/widgets/primary_button.dart';
 import '../core/constants/app_strings.dart';
-import '../services/auth_repository.dart';
-import '../services/analytics_repository.dart';
+import '../repositories/auth_repository.dart';
+import '../repositories/analytics_repository.dart';
 import 'home_screen.dart';
 import 'sign_up_screen.dart';
 
@@ -41,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
           _passwordController.text.trim(),
         );
 
-        await _analyticsRepository.logEvent('login_success');
+        await _analyticsRepository.logEvent(AppStrings.loginSuccessEvent);
 
         if (mounted) {
           Navigator.pushReplacement(
@@ -50,7 +50,9 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         }
       } on FirebaseAuthException catch (e) {
-        await _analyticsRepository.logEvent('login_failed', {'error': e.code});
+        await _analyticsRepository.logEvent(AppStrings.loginFailedEvent, {
+          'error': e.code,
+        });
 
         if (!mounted) return;
 
@@ -68,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _analyticsRepository.logScreenView('LoginScreen');
+    _analyticsRepository.logScreenView(AppStrings.loginScreen);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -121,7 +123,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 24),
                     _isLoading
                         ? const CircularProgressIndicator()
-                        : PrimaryButton(text: "Log In", onPressed: _login),
+                        : PrimaryButton(
+                            text: AppStrings.loginButton,
+                            onPressed: _login,
+                          ),
                     const SizedBox(height: 16),
                     TextButton(
                       onPressed: () {

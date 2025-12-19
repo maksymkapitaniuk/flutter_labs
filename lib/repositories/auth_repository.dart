@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../core/constants/app_strings.dart';
 
 class AuthRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -51,7 +52,7 @@ class AuthRepository {
   User? get currentUser => _auth.currentUser;
 
   Future<DocumentSnapshot> getUserData() async {
-    if (currentUser == null) throw Exception('No user logged in');
+    if (currentUser == null) throw Exception(AppStrings.noUserLoggedIn);
     return await _firestore.collection('users').doc(currentUser!.uid).get();
   }
 }

@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:reading_tracker/core/constants/app_strings.dart';
+import '../core/constants/app_strings.dart';
 import '../core/widgets/custom_text_field.dart';
 import '../core/widgets/primary_button.dart';
-import '../services/auth_repository.dart';
-import '../services/analytics_repository.dart';
+import '../repositories/auth_repository.dart';
+import '../repositories/analytics_repository.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
 
@@ -50,7 +50,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           _lastNameController.text.trim(),
         );
 
-        await _analyticsRepository.logEvent('sign_up_success');
+        await _analyticsRepository.logEvent(AppStrings.signUpSuccessEvent);
 
         if (mounted) {
           Navigator.pushReplacement(
@@ -77,7 +77,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _analyticsRepository.logScreenView('SignUpScreen');
+    _analyticsRepository.logScreenView(AppStrings.signUpScreen);
 
     return Scaffold(
       backgroundColor: Colors.white,

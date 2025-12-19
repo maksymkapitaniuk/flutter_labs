@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../data/mock_data.dart';
+import '../../models/book.dart';
 
 class BookListItem extends StatelessWidget {
   final Book book;
@@ -13,22 +13,15 @@ class BookListItem extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
+          SizedBox(
             width: 200,
             height: 300,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              image: DecorationImage(
-                image: AssetImage(book.coverUrl),
-                fit: BoxFit.cover,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withAlpha(10),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+            child: Image.network(
+              book.coverUrl!,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return const Center(child: Icon(Icons.error));
+              },
             ),
           ),
           const SizedBox(width: 20),
@@ -52,13 +45,6 @@ class BookListItem extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    Icon(
-                      book.isPrivate
-                          ? Icons.visibility_off_outlined
-                          : Icons.remove_red_eye_outlined,
-                      color: Colors.grey,
-                      size: 20,
-                    ),
                   ],
                 ),
                 const SizedBox(height: 4),
@@ -70,13 +56,6 @@ class BookListItem extends StatelessWidget {
                       style: TextStyle(
                         color: Colors.grey.shade600,
                         fontSize: 14,
-                      ),
-                    ),
-                    Text(
-                      book.publicationNumber,
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 12,
                       ),
                     ),
                   ],
@@ -93,7 +72,7 @@ class BookListItem extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
-                    value: book.progress,
+                    value: book.progressPercentage,
                     minHeight: 6,
                     backgroundColor: Colors.grey.shade200,
                     color: book.status == "In Progress"
