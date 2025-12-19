@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart'; // XFile
+import 'package:image_picker/image_picker.dart';
 import '../../models/book.dart';
 import '../../repositories/books_repository.dart';
 import '../../repositories/auth_repository.dart';
